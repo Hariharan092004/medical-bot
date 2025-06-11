@@ -1,0 +1,8 @@
+langchain==0.1.16
+langchain-community==0.0.14
+langchain-huggingface==0.0.1
+sentence-transformers==2.2.2
+faiss-cpu
+flask
+PyPDF2
+tf-keras
