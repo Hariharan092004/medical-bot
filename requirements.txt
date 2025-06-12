@@ -6,3 +6,5 @@ faiss-cpu
 flask
 PyPDF2
 tf-keras
+transformers>=4.38.0
+

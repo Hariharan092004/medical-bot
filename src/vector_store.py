@@ -1,7 +1,6 @@
 import os
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
-
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 def get_vector_store(text):

@@ -1,38 +1,38 @@
 import os
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 from langchain_community.llms import HuggingFacePipeline
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
 
-# Define the prompt template
+# Use an instruction-following prompt
 prompt_template = PromptTemplate(
     input_variables=["context", "question"],
     template="""
-Use the following context to answer the question briefly and clearly.
-Only include what the disease is and how it can be treated or prevented.
+Answer the following medical question using the provided context. Be concise and only include what the disease is, and how it can be treated or prevented.
 
-{context}
+Context: {context}
 
 Question: {question}
-Helpful Answer:
+Answer:
 """
 )
 
 def build_qa_chain(vectorstore):
-    model_name = os.getenv("LOCAL_MODEL_NAME", "distilgpt2")
+    model_name = os.getenv("LOCAL_MODEL_NAME", "google/flan-t5-base")
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
     hf_pipeline = pipeline(
-        "text-generation",
-        model=model_name,
+        "text2text-generation",
+        model=model,
+        tokenizer=tokenizer,
         max_new_tokens=200,
-        do_sample=True,
         temperature=0.7
     )
 
     local_llm = HuggingFacePipeline(pipeline=hf_pipeline)
 
-    # Now use the custom prompt in the chain
     return RetrievalQA.from_chain_type(
         llm=local_llm,
         retriever=vectorstore.as_retriever(),
